@@ -55,14 +55,25 @@ func ipfsCmd(c *commander.Command, args []string) error {
 	return nil
 }
 
+var cfg *config.Config
+
 func main() {
-	allok := checkForUpdates()
-	if !allok {
-		fmt.Println(VersionErrorLong)
+	var err error
+	cfg, err = config.Load("")
+	if err != nil {
+		fmt.Printf("Unable to load configuration file: %s \n", err)
 		return
 	}
 
-	err := CmdIpfs.Dispatch(os.Args[1:])
+	if cfg.Updates.Check != "ignore" {
+		allok := checkForUpdates()
+		if !allok {
+			fmt.Println("version is old dog")
+			return
+		}
+	}
+
+	err = CmdIpfs.Dispatch(os.Args[1:])
 	if err != nil {
 		if len(err.Error()) > 0 {
 			fmt.Fprintf(os.Stderr, "ipfs %s: %v\n", os.Args[1], err)
@@ -73,11 +84,5 @@ func main() {
 }
 
 func localNode() (*core.IpfsNode, error) {
-	//todo implement config file flag
-	cfg, err := config.Load("")
-	if err != nil {
-		return nil, err
-	}
-
 	return core.NewIpfsNode(cfg)
 }

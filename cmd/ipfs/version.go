@@ -80,7 +80,6 @@ func checkForUpdates() bool {
 		if !ok {
 			continue
 		}
-		fmt.Printf("The version is: %s \n", release["name"])
 		tagName, ok := release["name"].(string)
 		if !ok {
 			continue
