@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/gonuts/flag"
 	"github.com/jbenet/commander"
 	config "github.com/jbenet/go-ipfs/config"
 	core "github.com/jbenet/go-ipfs/core"
 	u "github.com/jbenet/go-ipfs/util"
-	"os"
 )
 
 // The IPFS command tree. It is an instance of `commander.Command`.
@@ -55,6 +56,12 @@ func ipfsCmd(c *commander.Command, args []string) error {
 }
 
 func main() {
+	allok := checkForUpdates()
+	if !allok {
+		fmt.Println(VersionErrorLong)
+		return
+	}
+
 	err := CmdIpfs.Dispatch(os.Args[1:])
 	if err != nil {
 		if len(err.Error()) > 0 {
