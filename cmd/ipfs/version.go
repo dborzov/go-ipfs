@@ -12,11 +12,11 @@ import (
 
 // The IPFS version.
 const (
-	Version                   = "0.2.0"
+	Version                   = "0.1.0"
 	EndpointURLLatestReleases = "https://api.github.com/repos/dborzov/lsp/tags"
 	VersionErrorShort         = `Warning: You are running version X.X.X of go-ipfs. The latest version is Y.Y.Y.`
 	VersionErrorLong          = `
-	Warning: You are running version X.X.X of go-ipfs. The latest version is Y.Y.Y.
+	Warning: You are running version %s of go-ipfs. The latest version is %s
 	Since this is alpha software, it is strongly recommended you update.
 
 	You can update go-ipfs by running
@@ -25,7 +25,7 @@ const (
 
 	You can silence this message by running
 
-	    ipfs config update.check ignore
+	    ipfs config updates.check ignore
 
 	`
 )
@@ -53,18 +53,18 @@ func versionCmd(c *commander.Command, _ []string) error {
 	return nil
 }
 
-func checkForUpdates() bool {
+func checkForUpdates() error {
 	currentVersion, err := semver.NewVersion(Version)
 	if err != nil {
-		fmt.Printf("The const Version literal in version.go needs to be in semver format: %s \n", Version)
-		return false
+		// const Version literal defined above is not a semver
+		return fmt.Errorf("The const Version literal in version.go needs to be in semver format: %s \n", Version)
 	}
 
 	resp, err := http.Get(EndpointURLLatestReleases)
 	if err != nil {
 		// can't reach the endpoint, coud be firewall, or no internet connection or something else
 		// will just silently move on
-		return true
+		return nil
 	}
 	var body interface{}
 	_ = json.NewDecoder(resp.Body).Decode(&body)
@@ -73,7 +73,7 @@ func checkForUpdates() bool {
 		// the response body does not seem to meet specified Github API format
 		// https://developer.github.com/v3/repos/#list-tags
 		// will just silently move on
-		return true
+		return nil
 	}
 	for _, r := range releases {
 		release, ok := r.(map[string]interface{})
@@ -93,8 +93,8 @@ func checkForUpdates() bool {
 			continue
 		}
 		if currentVersion.LessThan(*releaseVersion) {
-			return false
+			return fmt.Errorf(VersionErrorLong, Version, tagName)
 		}
 	}
-	return true
+	return nil
 }

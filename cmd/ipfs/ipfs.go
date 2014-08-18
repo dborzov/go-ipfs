@@ -65,11 +65,23 @@ func main() {
 		return
 	}
 
+	if len(os.Args) > 1 {
+		if os.Args[1] != "config" && os.Args[1] != "update" {
+			// when user attempts to update or tweaks the config variables
+			// she should not be prevented to do that with the Update check
+			// (so that if someone gets the version obsolete error message, the suggested fixes are actually working)
+			cfg.Updates.Check = "ignore"
+		}
+	}
+
 	if cfg.Updates.Check != "ignore" {
-		allok := checkForUpdates()
-		if !allok {
-			fmt.Println("version is old dog")
-			return
+		// we don't check for updates whenever explicitly forbidden in config
+		err := checkForUpdates()
+		if err != nil {
+			fmt.Println(err)
+			if cfg.Updates.Check != "warn" {
+				return
+			}
 		}
 	}
 
