@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/jbenet/go-ipfs",
-	"GoVersion": "go1.3",
+	"GoVersion": "go1.3.3",
 	"Packages": [
 		"./..."
 	],
@@ -132,9 +132,17 @@
 			"Rev": "9955b0ab8708602d411341e55fffd7e0700f86bd"
 		},
 		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "fdbe02a1b44e75977b2690062b83cf507d70c013"
+		},
+		{
 			"ImportPath": "github.com/maybebtc/logrus",
 			"Comment": "v0.6.0-6-g005463f",
 			"Rev": "005463f8fb49c4a6f36181e05157e111ec5cf8a3"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/colorstring",
+			"Rev": "15fc698eaae194ff160846daf77922a45b9290a7"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/go-homedir",
